@@ -26,22 +26,23 @@ function translateChar(character, charCode) {
     'x': 'xray',
     'y': 'yankee',
     'z': 'zulu',
-    '0': 'zero',
-    '1': 'one',
-    '2': 'two',
-    '3': 'three',
-    '4': 'four',
-    '5': 'five',
-    '6': 'six',
-    '7': 'seven',
-    '8': 'eight',
-    '9': 'nine',
-    '-': 'Dash',
-    '.': 'Point',
     'ä': 'alpha-echo',
     'ö': 'oskar-echo',
     'ü': 'union-echo',
     'ß': 'sierra-sierra',
+    '0': 'Zero',
+    '1': 'One',
+    '2': 'Two',
+    '3': 'Three',
+    '4': 'Four',
+    '5': 'Five',
+    '6': 'Six',
+    '7': 'Seven',
+    '8': 'Eight',
+    '9': 'Nine',
+    '-': 'Dash',
+    '.': 'Point',
+    ',': 'Comma'
     '!': '! (Exclamation Mark)',
     '$': '$ (Dollar)',
     '"': '" (Double Quote)',
@@ -52,7 +53,7 @@ function translateChar(character, charCode) {
     '=': '= (Equals)',
     '?': '? (Question Mark)',
     '#': '# (Hash Sign)',
-    ':': ': (colon)',
+    ':': ': (Colon)',
     ';': '; (Semicolon)',
     '*': '* (Asterisk)',
     '(': '( (Round Bracket)',
@@ -60,7 +61,11 @@ function translateChar(character, charCode) {
     '[': '[ (Square Bracket)',
     ']': '] (Square Bracket)',
     '_': '_ (Underscore)',
-    '\\': '\\ (Backslash) '
+    '\\': '\\ (Backslash) ',
+    '|': '| (Pipe)',
+    '~': '~ (Tilt)',
+    '@': '@ (AT Sign)',
+    '€': '€ (Euro Sign)'
   };
   
   var result = '';
@@ -113,6 +118,7 @@ function getTableRow(position, character, charCode) {
 
 jQuery(document).ready(function () {
   var wasclicked = false;
+  // Create a listener for the future element
   $('body').on('click', 'span[id^="generatedAccountPassword-"]', function () {
     if (!wasclicked) {
       wasclicked = true;

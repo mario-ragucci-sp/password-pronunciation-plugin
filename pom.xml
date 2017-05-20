@@ -6,7 +6,7 @@
     <version>1.0.5</version>
   </parent>
   <artifactId>password-pronunciation-plugin</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <name>password-pronunciation-plugin</name>
   <description>a plugin to help with letter pronunciation</description>
   <dependencies>

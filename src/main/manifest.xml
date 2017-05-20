@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
-<Plugin name="password-pronunciation-plugin" displayName="Password Pronunciation Plugin" version="0.1" disabled="false" certificationLevel="None" minSystemVersion="7.1" maxSystemVersion="7.1">
+<Plugin name="password-pronunciation-plugin" displayName="Password Pronunciation Plugin" version="0.2" disabled="false" certificationLevel="None" minSystemVersion="7.1" maxSystemVersion="7.1">
   <Attributes>
     <Map>     
       <entry key="minUpgradableVersion" value="0.1"/>     
