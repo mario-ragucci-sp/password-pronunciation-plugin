@@ -62,6 +62,7 @@ function translateChar(character, charCode) {
     '_': '_ (Underscore)',
     '\\': '\\ (Backslash) '
   };
+  
   var result = '';
   var translation = mapping[character.toLowerCase()];
   if (translation == null) {
@@ -73,11 +74,38 @@ function translateChar(character, charCode) {
   }
   return result.toLowerCase();
 }
+
+function isCapital(charCode) {
+	var isCapital = false;
+	if (charCode >= 65 && charCode <= 90) {
+	    isCapital = true;
+	}
+	
+	return isCapital;
+}
+
+function isCapitalHumanBoolean(charCode) {
+	var isCapital = 'No';
+	if (charCode >= 65 && charCode <= 90) {
+	    isCapital = 'Yes';
+	}
+	
+	return isCapital;
+}
+
 function getTableRow(position, character, charCode) {
   var translation = translateChar(character, charCode);
-  var result = '<tr><td width=\'20px\' align=\'right\'>' + position + '.</td><td width=\'60px\'>Character</td><td width=\'200px\'>' + translation + '</td></tr>';
+  var isCapital   = isCapitalHumanBoolean(charCode);
+  var result =  '<tr>' +
+		'<td width=\'20px\' align=\'right\'>'+ position +'.</td>' +
+		'<td width=\'60px\'>Character</td>' +
+		'<td width=\'200px\'><b>'+ translation +'</b></td>' +
+		'<td width=\'80px\'>'+ isCapital +'</td>' +
+	'</tr>';
+  
   return result;
 }
+
 jQuery(document).ready(function () {
   var wasclicked = false;
   $('body').on('click', 'span[id^="generatedAccountPassword-"]', function () {
@@ -85,14 +113,22 @@ jQuery(document).ready(function () {
       wasclicked = true;
       var span = $('span[id^="generatedAccountPassword-"]');
       var passwordStr = span[0].innerHTML;
-      var tableStr = '<table>';
+      
+      // create table
+      var tableStr = '<table class=\'table\'>';
+      tableStr += '<tr><th>&nbsp;</th><th align=\'right\'>index</th><th>pronunciaton</th><th>capital letter</th></tr>';
+      
       // iterate over all characters
       for (i = 0; i < passwordStr.length; i++) {
         var character = passwordStr.charAt(i);
         var charcode = passwordStr.charCodeAt(i);
         tableStr += getTableRow((i + 1), character, charcode);
       }
+      
+      // finish table
       tableStr += '</table>';
+      
+      // append table
       span.parent().append(tableStr);
     } else {
       wasclicked = false;
