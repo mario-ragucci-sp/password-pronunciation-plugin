@@ -42,7 +42,7 @@ function translateChar(character, charCode) {
     '9': 'Nine',
     '-': 'Dash',
     '.': 'Point',
-    ',': 'Comma'
+    ',': 'Comma',
     '!': '! (Exclamation Mark)',
     '$': '$ (Dollar)',
     '"': '" (Double Quote)',
