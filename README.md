@@ -1,6 +1,79 @@
 # Password Pronunciation Plugin
-### What is this plugin for?
+## What is this plugin for?
 this plugin injects a table to the change password dialog, assisting the helpdesk when pronuncing the letters of the generated password.
 
-### Installation
+## Installation
 This plugin can be installed using the standard procedure. Visit the plugin page and click the button for a new plugin. Then, drag and drop the plugin zipfile onto the upload field. No further configuration is required.
+
+### Extending the translation mapping
+the file ui/js/headerInject.js defines the variable "mapping" in the function "translate". This is a JSON object that can be extended according to your requirements.
+```
+mapping = {
+    'a': 'alpha',
+    'b': 'bravo',
+    'c': 'charlie',
+    'd': 'delta',
+    'e': 'echo',
+    'f': 'foxtrott',
+    'g': 'golf',
+    'h': 'hotel',
+    'i': 'india',
+    'j': 'juliet',
+    'k': 'kilo',
+    'l': 'lima',
+    'm': 'mike',
+    'n': 'november',
+    'o': 'oskar',
+    'p': 'papa',
+    'q': 'quebec',
+    'r': 'romeo',
+    's': 'sierra',
+    't': 'tango',
+    'u': 'uniform',
+    'v': 'victor',
+    'w': 'whiskey',
+    'x': 'xray',
+    'y': 'yankee',
+    'z': 'zulu',
+    'ä': 'alpha-echo',
+    'ö': 'oskar-echo',
+    'ü': 'union-echo',
+    'ß': 'sierra-sierra',
+    '0': 'Zero',
+    '1': 'One',
+    '2': 'Two',
+    '3': 'Three',
+    '4': 'Four',
+    '5': 'Five',
+    '6': 'Six',
+    '7': 'Seven',
+    '8': 'Eight',
+    '9': 'Nine',
+    '-': 'Dash',
+    '.': 'Point',
+    ',': 'Comma',
+    '!': '! (Exclamation Mark)',
+    '$': '$ (Dollar)',
+    '"': '" (Double Quote)',
+    '§': '§ (Paragraph)',
+    '%': '% (Percent)',
+    '&': '& (Ampersand)',
+    '/': '/ (Slash)',
+    '=': '= (Equals)',
+    '?': '? (Question Mark)',
+    '#': '# (Hash Sign)',
+    ':': ': (Colon)',
+    ';': '; (Semicolon)',
+    '*': '* (Asterisk)',
+    '(': '( (Round Bracket)',
+    ')': ') (Round Bracket)',
+    '[': '[ (Square Bracket)',
+    ']': '] (Square Bracket)',
+    '_': '_ (Underscore)',
+    '\\': '\\ (Backslash) ',
+    '|': '| (Pipe)',
+    '~': '~ (Tilt)',
+    '@': '@ (AT Sign)',
+    '€': '€ (Euro Sign)'
+  };
+```
