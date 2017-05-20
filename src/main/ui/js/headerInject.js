@@ -84,6 +84,11 @@ function isCapital(charCode) {
 	return isCapital;
 }
 
+function removeTable() {
+    var tbl = document.getElementById("ppp-table");
+    if(tbl) tbl.parentNode.removeChild(tbl);
+}
+
 function isCapitalHumanBoolean(charCode) {
 	var isCapital = 'No';
 	if (charCode >= 65 && charCode <= 90) {
@@ -115,7 +120,7 @@ jQuery(document).ready(function () {
       var passwordStr = span[0].innerHTML;
       
       // create table
-      var tableStr = '<table class=\'table\'>';
+      var tableStr = '<table class=\'table\' id=\'ppp-table\'>';
       tableStr += '<tr><th>&nbsp;</th><th align=\'right\'>index</th><th>pronunciaton</th><th>capital letter</th></tr>';
       
       // iterate over all characters
@@ -131,7 +136,9 @@ jQuery(document).ready(function () {
       // append table
       span.parent().append(tableStr);
     } else {
+    	// remove table
       wasclicked = false;
+      removeTable();
     }
   });
 });
