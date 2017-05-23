@@ -40,9 +40,9 @@ function translateChar(character, charCode) {
     '7': 'Seven',
     '8': 'Eight',
     '9': 'Nine',
-    '-': 'Dash',
-    '.': 'Point',
-    ',': 'Comma',
+    '-': '- (Dash)',
+    '.': '. (Point)',
+    ',': ', (Comma)',
     '!': '! (Exclamation Mark)',
     '$': '$ (Dollar)',
     '"': '" (Double Quote)',
@@ -77,7 +77,10 @@ function translateChar(character, charCode) {
   if (charCode >= 65 && charCode <= 90) {
     return result.toUpperCase();
   }
-  return result.toLowerCase();
+  if(charCode >= 97 && charCode <= 122) {
+	  return result.toLowerCase();
+  }
+  return result;
 }
 
 function isCapital(charCode) {
