@@ -1,0 +1,14 @@
+<ul class="nav nav-pills">
+	<li role="presentation"><a href="#/home">Home</a></li>
+	<li role="presentation"><a href="#/modify">Modify Data</a></li>
+	<li role="presentation" class="active"><a href="#/upload">Upload</a></li>
+</ul>
+<h3><small>Password Pronunciation Plugin</small></h3>
+<hr />
+<h2>{{headline}}</h2>
+<p>You can upload a new Pronunciation definition via this file dialog</p>
+<p>The file should be a CSV in the format key:value without a header line</p>
+<form id="uploadDefinition" role="form" data-ng-submit="upload()">
+<input type="file" id="file" name="file"/>
+<button type="submit" value="upload" class="btn btn-default btn-sm btn-primary"><span class="glyphicon glyphicon-upload"></span>Upload</button>
+</form>

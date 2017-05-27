@@ -8,13 +8,23 @@
         <value>
           <List/>
         </value>
-      </entry>     
+      </entry>
+      <entry key="fullPage">
+        <value>
+          <FullPage title="Password Pronunciation Plugin" />
+        </value>
+      </entry>  
       <entry key="snippets">
         <value>
           <List>
+            <Snippet regexPattern=".*">
+              <Scripts>
+                <String>ui/js/buttonInject.js</String>
+              </Scripts>
+            </Snippet>
             <Snippet regexPattern="/identities/identities.jsf.*">
               <Scripts>
-                <String>ui/js/headerInject.js</String>
+                <String>ui/js/passwordTableInject.js</String>
               </Scripts>
             </Snippet>
           </List>
