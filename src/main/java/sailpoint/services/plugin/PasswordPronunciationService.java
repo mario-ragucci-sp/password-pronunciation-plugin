@@ -1,25 +1,23 @@
 package sailpoint.services.plugin;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 
-import sailpoint.api.SailPointContext;
-import sailpoint.object.Attributes;
-import sailpoint.object.Configuration;
-import sailpoint.object.SAMLConfig;
 import sailpoint.rest.plugin.AllowAll;
 import sailpoint.rest.plugin.BasePluginResource;
 import sailpoint.tools.GeneralException;
@@ -29,8 +27,12 @@ import sailpoint.tools.GeneralException;
 @Produces(MediaType.TEXT_PLAIN)
 @AllowAll
 public class PasswordPronunciationService extends BasePluginResource {
-	public static final String SQL_SESSION_QUERY = "SELECT SESSION_INDEX FROM SAML_SESSIONS WHERE ACCOUNT=? AND CSRF_TOKEN=?";
-	public static final String SQL_REMOVE_DATA	 = "DELETE FROM SAML_SESSIONS WHERE ACCOUNT=? AND CSRF_TOKEN=?";
+	public static final String SQL_INSERT_QUERY		= "INSERT INTO PASSWORD_PRONUNCIATION_MAPPING(KEY,VALUE) VALUES(?,?)";
+	public static final String SQL_UPDATE_QUERY		= "UPDATE PASSWORD_PRONUNCIATION_MAPPING SET KEY=?, VALUE=? WHERE ID=?";
+	public static final String SQL_DELETE_QUERY		= "DELETE FROM PASSWORD_PRONUNCIATION_MAPPING WHERE ID=?";
+	public static final String SQL_SELECT_ALL_QUERY	= "SELECT ID,KEY,VALUE FROM PASSWORD_PRONUNCIATION_MAPPING";
+	public static final String SQL_SELECT_QUERY		= "SELECT ID,KEY,VALUE FROM PASSWORD_PRONUNCIATION_MAPPING WHERE ID=?";
+	
 	public static final Logger _logger = Logger.getLogger(PasswordPronunciationService.class);
     
 	@Override
@@ -38,12 +40,33 @@ public class PasswordPronunciationService extends BasePluginResource {
 		return "password-pronunciation-plugin";
 	}
 	
+	/**
+	 * 
+	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("getData")
-	public void getData() {
+	@Path("data")
+	public void getAllData() {
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s()", "getData"));
+			_logger.debug(String.format("ENTERING method %s()", "getAllData"));
+		}
+		
+		
+		
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "getData", null));
+		}
+	}
+	
+	/**
+	 * @param id
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("data/{id}")
+	public void getData(@PathParam("id") int id) {
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("ENTERING method %s(id = %s)", "getData", id));
 		}
 		
 		
@@ -53,13 +76,19 @@ public class PasswordPronunciationService extends BasePluginResource {
 		}
 	}
 
+	/**
+	 * @param id
+	 * @param key
+	 * @param value
+	 * @return
+	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
-	@Path("updateData")
-	public String updateData() {
+	@Path("data")
+	public String updateData(@FormParam("id") int id, @FormParam("key") String key, @FormParam("value") String value) {
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s()", "updateData"));
+			_logger.debug(String.format("ENTERING method %s(id = %s, key = %s, value = %s)", "updateData", id, key, value));
 		}
 		String result = null;
 		
@@ -70,13 +99,19 @@ public class PasswordPronunciationService extends BasePluginResource {
 		return result;
 	}
 	
+	/**
+	 * @param id
+	 * @param key
+	 * @param value
+	 * @return
+	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
-	@Path("addData")
-	public String addData() {
+	@Path("data")
+	public String addData(@FormParam("id") int id, @FormParam("key") String key, @FormParam("value") String value) {
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s()", "addData"));
+			_logger.debug(String.format("ENTERING method %s(id = %s, key = %s, value = %s)", "addData", id, key, value));
 		}
 		String result = null;
 		
@@ -87,11 +122,15 @@ public class PasswordPronunciationService extends BasePluginResource {
 		return result;
 	}
 	
+	/**
+	 * @param file
+	 * @return
+	 */
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("uploadData")
-	public String uploadData() {
+	public String uploadData(@FormParam("file") File file) {
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("ENTERING method %s()", "uploadData"));
 		}
@@ -104,11 +143,15 @@ public class PasswordPronunciationService extends BasePluginResource {
 		return result;	
 	}
 	
+	/**
+	 * @param id
+	 * @return
+	 */
 	@DELETE
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("deleteData")
-	public String deleteData() {
+	@Path("data/{id}")
+	public String deleteData(@PathParam("id") int id) {
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("ENTERING method %s()", "deleteData"));
 		}
@@ -122,100 +165,97 @@ public class PasswordPronunciationService extends BasePluginResource {
 		return result;
 	}
 	
-	/**
-	 * Returns the csrf token of the session
-	 * @return
-	 */
-	private String getCsrfToken() {
-		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s()", "getCsrfToken"));
-		}
-		String csrfToken = (String) getSession().getAttribute("csrfToken");
-		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("LEAVING method %s (returns: %s)", "getCsrfToken", csrfToken));
-		}
-		return csrfToken;
-	}
-
-	/**
-	 * Returns the IdentityIQ SAML Configuration object
-	 * @return the SAMLConfig object
-	 * @throws GeneralException
-	 */
-	private SAMLConfig getSamlConfig() throws GeneralException {
-		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s()", "getSamlConfig"));
-		}
-		SailPointContext context = getContext();
-		Configuration samlConfig = context.getObjectByName(Configuration.class, "SAML");
-		Attributes<String,Object> attributes = samlConfig.getAttributes();
-		
-		SAMLConfig config = (SAMLConfig) attributes.get("IdentityNow");
-		
-		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("LEAVING method %s (returns: %s)", "getSamlConfig", config));
-		}
-		return config;
-	}
 	
 	/**
-	 * returns a session index from the database
-	 * @param principal the name of the logged-in account
-	 * @param csrfToken the csrf token associated to the session
+	 * @param id
 	 * @return
 	 * @throws GeneralException
 	 * @throws SQLException
 	 */
-	private String returnSessionIndexFromDb(String principal, String csrfToken) throws GeneralException, SQLException {
+	@SuppressWarnings("unused")
+	private Boolean deleteEntryInDb(int id) throws GeneralException, SQLException {
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s(principal = %s, csrfToken)", "returnSessionIndexFromDb", principal, csrfToken));
+			_logger.debug(String.format("ENTERING method %s(id = %s)", "deleteEntryInDb", id));
 		}
-		String result = null;
+		Boolean success = false; 
 		Connection connection = getConnection();
-		PreparedStatement prepStatement = connection.prepareStatement(SQL_SESSION_QUERY);
+		PreparedStatement prepStatement = connection.prepareStatement(SQL_DELETE_QUERY);
 		
-		prepStatement.setString(1, principal);
-		prepStatement.setString(2, csrfToken);
+		prepStatement.setInt(1, id);
 		
-		ResultSet rs = prepStatement.executeQuery();
-		if(rs.next()) {
-			result = rs.getString(1);
-		}
-		
-		rs.close();
-		prepStatement.close();
-		connection.close();
-		
-		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("LEAVING method %s (returns: %s)", "returnSessionIndexFromDb", result));
-		}
-		return result;
-	}
-	
-	/**
-	 * removes a session index from the database
-	 * @param principal the name of the logged-in account
-	 * @param csrfToken the csrf token associated to the session
-	 * @throws GeneralException
-	 * @throws SQLException
-	 */
-	private void removeEntryFromDb(String principal, String csrfToken) throws GeneralException, SQLException {
-		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s(principal = %s, csrfToken)", "removeEntryFromDb", principal, csrfToken));
-		}
-		Connection connection = getConnection();
-		PreparedStatement prepStatement = connection.prepareStatement(SQL_REMOVE_DATA);
-		
-		prepStatement.setString(1, principal);
-		prepStatement.setString(2, csrfToken);
-		
-		prepStatement.execute();
+		success = prepStatement.execute();
 
 		prepStatement.close();
 		connection.close();
 		
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("LEAVING method %s (returns: %s)", "removeEntryFromDb", "void"));
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "deleteEntryInDb", success));
 		}
+		
+		return success;
+	}
+	
+	/**
+	 * @param key
+	 * @param value
+	 * @return
+	 * @throws GeneralException
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unused")
+	private Boolean createEntryInDb(String key, String value) throws GeneralException, SQLException {
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("ENTERING method %s(key = %s, value = %s)", "createEntryInDb", key, value));
+		}
+		boolean success = false; 
+		Connection connection = getConnection();
+		PreparedStatement prepStatement = connection.prepareStatement(SQL_INSERT_QUERY);
+
+		prepStatement.setString(1, key);
+		prepStatement.setString(2, value);
+		
+		success = prepStatement.execute();
+
+		prepStatement.close();
+		connection.close();
+		
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "createEntryInDb", success));
+		}
+		
+		return success;
+	}
+	
+	/**
+	 * @param id
+	 * @param key
+	 * @param value
+	 * @return
+	 * @throws GeneralException
+	 * @throws SQLException
+	 */
+	@SuppressWarnings("unused")
+	private int updateEntryInDb(int id, String key, String value) throws GeneralException, SQLException {
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("ENTERING method %s(id = %s, key = %s, value = %s)", "updateEntryInDb", id, key, value));
+		}
+		int updatedEntries = 0;
+		Connection connection = getConnection();
+		PreparedStatement prepStatement = connection.prepareStatement(SQL_UPDATE_QUERY);
+
+		prepStatement.setString(1, key);
+		prepStatement.setString(2, value);
+		prepStatement.setInt(3, id);
+		
+		updatedEntries = prepStatement.executeUpdate();
+
+		prepStatement.close();
+		connection.close();
+		
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "updateEntryInDb", updatedEntries));
+		}
+		
+		return updatedEntries;
 	}
 }
