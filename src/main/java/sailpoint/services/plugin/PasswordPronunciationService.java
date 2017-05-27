@@ -101,17 +101,28 @@ public class PasswordPronunciationService extends BasePluginResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)	
 	@Path("data")
-	public String updateData(@FormParam("id") int id, @FormParam("key") String key, @FormParam("value") String value) {
+	public Response updateData(@FormParam("id") int id, @FormParam("key") String key, @FormParam("value") String value) {
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("ENTERING method %s(id = %s, key = %s, value = %s)", "updateData", id, key, value));
 		}
-		String result = null;
+		int result = 0;
+		Response response = null;
+		try {
+			result = updateEntry(id, key, value);
+		} catch (GeneralException e) {
+			_logger.error(e.getMessage());
+		}
 		
+		if(result >= 1) {
+			response = Response.ok().build();
+		} else {
+			response = Response.status(Status.BAD_REQUEST).build();
+		}
 		
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("LEAVING method %s (returns: %s)", "updateData", result));
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "updateData", response));
 		}
-		return result;
+		return response;
 	}
 	
 	/**
@@ -124,17 +135,28 @@ public class PasswordPronunciationService extends BasePluginResource {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)	
 	@Path("data")
-	public String createData(@FormParam("id") int id, @FormParam("key") String key, @FormParam("value") String value) {
+	public Response createData(@FormParam("key") String key, @FormParam("value") String value) {
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s(id = %s, key = %s, value = %s)", "createData", id, key, value));
+			_logger.debug(String.format("ENTERING method %s(key = %s, value = %s)", "createData", key, value));
 		}
-		String result = null;
+		Response response = null;
+		Boolean result = false;
+		try {
+			result = createEntry(key, value);
+		} catch (GeneralException e) {
+			_logger.error(e.getMessage());
+		}
 		
+		if(result) {
+			response = Response.ok().build();
+		} else {
+			response = Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
 		
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("LEAVING method %s (returns: %s)", "createData", result));
 		}
-		return result;
+		return response;
 	}
 	
 	/**
@@ -197,7 +219,6 @@ public class PasswordPronunciationService extends BasePluginResource {
 	 * @throws GeneralException
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("unused")
 	private Boolean createEntry(String key, String value) throws GeneralException {
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("ENTERING method %s(key = %s, value = %s)", "createEntry", key, value));
@@ -229,10 +250,6 @@ public class PasswordPronunciationService extends BasePluginResource {
 				}
 			}
 		}
-
-		
-
-		
 		
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("LEAVING method %s (returns: %s)", "createEntry", success));
@@ -342,7 +359,6 @@ public class PasswordPronunciationService extends BasePluginResource {
 	 * @throws GeneralException
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("unused")
 	private int updateEntry(int id, String key, String value) throws GeneralException {
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("ENTERING method %s(id = %s, key = %s, value = %s)", "updateEntry", id, key, value));
