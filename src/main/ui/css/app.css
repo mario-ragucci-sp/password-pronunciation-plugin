@@ -5,9 +5,11 @@
 }
 
 /* Set height of the grid so .sidenav can be 100% (adjust if needed) */
-.row.content {height: auto;}
+.row.content {
+	height: auto;
+}
 
 .container-fluid {
 	padding-left: 250px;
-  padding-top: 50px;
+	padding-top: 50px;
 }

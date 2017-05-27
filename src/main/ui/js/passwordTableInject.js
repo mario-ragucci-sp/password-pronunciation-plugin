@@ -1,5 +1,4 @@
 // URL where we will find our RESTful logout service    
-var url = SailPoint.CONTEXT_PATH + '/plugin/rest/password-pronunciation-plugin/doLogout';
 function translateChar(character, charCode) {
   mapping = {
     'a': 'alpha',

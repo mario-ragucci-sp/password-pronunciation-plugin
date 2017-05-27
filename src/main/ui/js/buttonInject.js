@@ -1,7 +1,6 @@
 /**
  * Created by brian.rose on 1/26/2017.
  */
-
 var url = SailPoint.CONTEXT_PATH + '/plugins/pluginPage.jsf?pn=password-pronunciation-plugin';
 jQuery(document).ready(function(){
     jQuery("ul.navbar-right li:first")

@@ -1,7 +1,8 @@
 (function () {
-  'use strict';
-  var app = angular.module('passwordPronunciationApp');
-
+	'use strict';
+  
+	var app = angular.module('passwordPronunciationApp');
+	
 	/** HOME Controller **/
 	app.controller('HomeController', function($scope) {
 		$scope.headline = 'General Information';

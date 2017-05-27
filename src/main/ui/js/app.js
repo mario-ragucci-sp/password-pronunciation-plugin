@@ -1,5 +1,6 @@
 (function () {
-  'use strict';
+	'use strict';
+	
 	var app = angular.module('passwordPronunciationApp', ['ngRoute']);
 	app.config(function($routeProvider) {
 		$routeProvider
