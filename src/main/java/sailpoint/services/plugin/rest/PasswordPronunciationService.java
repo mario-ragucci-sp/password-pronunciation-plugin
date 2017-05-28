@@ -1,4 +1,4 @@
-package sailpoint.services.plugin;
+package sailpoint.services.plugin.rest;
 
 import java.io.File;
 import java.sql.Connection;
@@ -29,16 +29,14 @@ import sailpoint.rest.plugin.AllowAll;
 import sailpoint.rest.plugin.BasePluginResource;
 import sailpoint.tools.GeneralException;
 
-@Path("saml-logout")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.TEXT_PLAIN)
+@Path("password-pronunciation")
 @AllowAll
 public class PasswordPronunciationService extends BasePluginResource {
-	public static String SQL_INSERT_QUERY		= "INSERT INTO PASSWORD_PRONUNCIATION_MAPPING(KEY,VALUE) VALUES(?,?)";
-	public static String SQL_UPDATE_QUERY		= "UPDATE PASSWORD_PRONUNCIATION_MAPPING SET KEY=?, VALUE=? WHERE ID=?";
+	public static String SQL_INSERT_QUERY		= "INSERT INTO PASSWORD_PRONUNCIATION_MAPPING(DATA_KEY,DATA_VALUE) VALUES(?,?)";
+	public static String SQL_UPDATE_QUERY		= "UPDATE PASSWORD_PRONUNCIATION_MAPPING SET DATA_KEY=?, DATA_VALUE=? WHERE ID=?";
 	public static String SQL_DELETE_QUERY		= "DELETE FROM PASSWORD_PRONUNCIATION_MAPPING WHERE ID=?";
-	public static String SQL_SELECT_ALL_QUERY	= "SELECT ID,KEY,VALUE FROM PASSWORD_PRONUNCIATION_MAPPING";
-	public static String SQL_SELECT_QUERY		= "SELECT ID,KEY,VALUE FROM PASSWORD_PRONUNCIATION_MAPPING WHERE ID=?";
+	public static String SQL_SELECT_ALL_QUERY	= "SELECT ID,DATA_KEY,DATA_VALUE FROM PASSWORD_PRONUNCIATION_MAPPING";
+	public static String SQL_SELECT_QUERY		= "SELECT ID,DATA_KEY,DATA_VALUE FROM PASSWORD_PRONUNCIATION_MAPPING WHERE ID=?";
 	
 	public static final Logger _logger = Logger.getLogger(PasswordPronunciationService.class);
     
@@ -74,21 +72,61 @@ public class PasswordPronunciationService extends BasePluginResource {
 	}
 	
 	/**
+	 * 
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("mappingtable")
+	public Response getAllDataSingleObject() {
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("ENTERING method %s()", "getAllDataSingleObject"));
+		}
+		
+		Map<String, Object> result = null;
+		try {
+			result = readEntriesSingleObject();
+		} catch (GeneralException e) {
+			_logger.error(e.getMessage());
+		}
+		
+		
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "getAllDataSingleObject", result));
+		}
+		
+		return Response.ok().entity(result).build();
+	}
+	
+	/**
 	 * @param id
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("data/{id}")
-	public void getData(@PathParam("id") int id) {
+	public Response getData(@PathParam("id") int id) {
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("ENTERING method %s(id = %s)", "getData", id));
 		}
 		
+		Response response = null;
+		Map<String, Object> result = null;
 		
+		try {
+			result = readEntry(id);
+		} catch (GeneralException e) {
+			_logger.error(e.getMessage());
+		}
+		
+		if(result != null) {
+			response = Response.ok().entity(result).build();
+		} else {
+			response = Response.status(Status.NOT_FOUND).build();
+		}
 		
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("LEAVING method %s (returns: %s)", "getData", null));
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "getData", response));
 		}
+		return response;
 	}
 
 	/**
@@ -98,7 +136,7 @@ public class PasswordPronunciationService extends BasePluginResource {
 	 * @return
 	 */
 	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)	
 	@Path("data")
 	public Response updateData(@FormParam("id") int id, @FormParam("key") String key, @FormParam("value") String value) {
@@ -132,7 +170,7 @@ public class PasswordPronunciationService extends BasePluginResource {
 	 * @return
 	 */
 	@POST
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)	
 	@Path("data")
 	public Response createData(@FormParam("key") String key, @FormParam("value") String value) {
@@ -148,9 +186,9 @@ public class PasswordPronunciationService extends BasePluginResource {
 		}
 		
 		if(result) {
-			response = Response.ok().build();
+			response = Response.ok().entity(result).build();
 		} else {
-			response = Response.status(Status.INTERNAL_SERVER_ERROR).build();
+			response = Response.status(Status.BAD_REQUEST).build();
 		}
 		
 		if(_logger.isDebugEnabled()) {
@@ -179,13 +217,12 @@ public class PasswordPronunciationService extends BasePluginResource {
 		}
 		return result;	
 	}
-	
+		
 	/**
 	 * @param id
 	 * @return
 	 */
 	@DELETE
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("data/{id}")
 	public Response deleteData(@PathParam("id") int id) {
@@ -223,7 +260,8 @@ public class PasswordPronunciationService extends BasePluginResource {
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("ENTERING method %s(key = %s, value = %s)", "createEntry", key, value));
 		}
-		boolean success = false; 
+		int success = 0;
+		Boolean result = false;
 		Connection connection = getConnection();
 		PreparedStatement prepStatement = null;
 		try {
@@ -231,7 +269,10 @@ public class PasswordPronunciationService extends BasePluginResource {
 			prepStatement.setString(1, key);
 			prepStatement.setString(2, value);
 			
-			success = prepStatement.execute();
+			success = prepStatement.executeUpdate();
+			if(success == 1) {
+				result = true;
+			}
 		} catch (SQLException e) {
 			_logger.error(e.getMessage());
 		} finally {
@@ -252,10 +293,10 @@ public class PasswordPronunciationService extends BasePluginResource {
 		}
 		
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("LEAVING method %s (returns: %s)", "createEntry", success));
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "createEntry", result));
 		}
 		
-		return success;
+		return result;
 	}
 	
 	/**
@@ -274,7 +315,7 @@ public class PasswordPronunciationService extends BasePluginResource {
 		try {
 			prepStatement = connection.prepareStatement(SQL_SELECT_ALL_QUERY);
 			ResultSet rs = prepStatement.executeQuery();
-			if(rs.next()) {
+			while(rs.next()) {
 				Map<String, Object> resultObj = new HashMap<>();
 				resultObj.put("id", rs.getInt(1));
 				resultObj.put("key", rs.getString(2));
@@ -306,7 +347,49 @@ public class PasswordPronunciationService extends BasePluginResource {
 		return result;
 	}
 	
-	@SuppressWarnings("unused")
+	/**
+	 * @return
+	 * @throws GeneralException
+	 * @throws SQLException
+	 */
+	private Map<String, Object> readEntriesSingleObject() throws GeneralException {
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("ENTERING method %s()", "readEntriesSingleObject"));
+		}
+		Map<String, Object> result = new HashMap<>();
+		
+		Connection connection = getConnection();
+		PreparedStatement prepStatement = null;
+		try {
+			prepStatement = connection.prepareStatement(SQL_SELECT_ALL_QUERY);
+			ResultSet rs = prepStatement.executeQuery();
+			while(rs.next()) {
+				result.put(rs.getString(2), rs.getString(3));
+			}
+		} catch (SQLException e) {
+			_logger.error(e.getMessage());
+		} finally {
+			if(prepStatement != null) {
+				try {
+					prepStatement.close();
+				} catch (SQLException e) {
+					_logger.error(e.getMessage());
+				}
+			}
+			if(connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					_logger.error(e.getMessage());
+				}
+			}
+		}
+		if(_logger.isDebugEnabled()) {
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "readEntriesSingleObject", result));
+		}
+		return result;
+	}
+	
 	private Map<String, Object> readEntry(int id) throws GeneralException {
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("ENTERING method %s(id = %s)", "readEntry", id));
@@ -416,7 +499,10 @@ public class PasswordPronunciationService extends BasePluginResource {
 			prepStatement = connection.prepareStatement(SQL_DELETE_QUERY);
 			prepStatement.setInt(1, id);
 			
-			success = prepStatement.execute();
+			int resultInt = prepStatement.executeUpdate();
+			if(resultInt == 1) {
+				success = true;
+			}
 		} catch (SQLException e) {
 			_logger.error(e.getMessage());
 		} finally {

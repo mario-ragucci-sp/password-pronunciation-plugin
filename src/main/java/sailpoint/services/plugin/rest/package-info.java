@@ -5,4 +5,4 @@
  * @author mario.ragucci
  *
  */
-package sailpoint.services.plugin;
+package sailpoint.services.plugin.rest;

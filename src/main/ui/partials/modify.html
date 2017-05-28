@@ -30,6 +30,12 @@
 <hr />
 <br />
 <h4>{{subtitle1}}</h4>
+<div data-ng-show="modifyError" class="alert alert-danger">
+	<span data-ng-show="modifyError" data-ng-cloak>{{modifyError}}</span>
+</div>
+<div data-ng-show="modifySuccess" class="alert alert-success">
+	<span data-ng-show="modifySuccess" data-ng-cloak>{{modifySuccess}}</span>
+</div>
 <table class="table table-striped table-hover table-condensed" id="modifyTable">
 	<tr>
 		<th>key</th>
@@ -37,10 +43,10 @@
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 	</tr>
-  <tr data-ng-repeat="(key, value) in data1">
-  	<td><span contentEditable="true">{{key}}</span></td>
-  	<td><span contentEditable="true">{{value}}</span></td>
-  	<td><button type="button" class="btn btn-link btn-large"><span class="glyphicon glyphicon-save"></span>Update</button></td>
-  	<td><button type="button" class="btn btn-link btn-large" data-ng-click="remove(key)"><span class="glyphicon glyphicon-trash"></span>Remove</button></td>
+  <tr data-ng-repeat="row in data1">
+  	<td><span contentEditable="false">{{row.key}}</span></td>
+  	<td><span contentEditable="true" id="mappingvalue-{{$index}}">{{row.value}}</span></td>
+  	<td><button type="button" class="btn btn-link btn-large" data-ng-click="update($index, row.id, row.key, row.value)"><span class="glyphicon glyphicon-save"></span>Update</button></td>
+  	<td><button type="button" class="btn btn-link btn-large" data-ng-click="remove(row.id)"><span class="glyphicon glyphicon-trash"></span>Remove</button></td>
   </tr>
 </table>

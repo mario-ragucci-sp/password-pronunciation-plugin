@@ -32,7 +32,9 @@
       </entry>      
       <entry key="restResources">
         <value>
-          <List/>
+          <List>
+            <String>sailpoint.services.plugin.rest.PasswordPronunciationService</String>
+          </List>
         </value>
       </entry>
     </Map>

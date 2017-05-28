@@ -1,6 +1,20 @@
 // URL where we will find our RESTful logout service    
-function translateChar(character, charCode) {
-  mapping = {
+function returnPronunciationMapping(url) {
+    var result = {};
+	Ext.Ajax.request({
+        url: url,
+        async: false,
+        success: function(response){
+            result = response.responseText;
+        }
+    });
+	
+	return result;
+}
+
+function translateChar(mapping, character, charCode) {
+  /*
+   mapping = {
     'a': 'alpha',
     'b': 'bravo',
     'c': 'charlie',
@@ -68,6 +82,7 @@ function translateChar(character, charCode) {
     '@': '@ (AT Sign)',
     '€': '€ (Euro Sign)'
   };
+  */
   
   var result = '';
   var translation = mapping[character.toLowerCase()];
@@ -107,8 +122,8 @@ function isCapitalHumanBoolean(charCode) {
 	return isCapital;
 }
 
-function getTableRow(position, character, charCode) {
-  var translation = translateChar(character, charCode);
+function getTableRow(mapping, position, character, charCode) {
+  var translation = translateChar(mapping, character, charCode);
   var isCapital   = isCapitalHumanBoolean(charCode);
   var result =  '<tr>' +
 		'<td width=\'20px\' align=\'right\'>'+ position +'.</td>' +
@@ -133,11 +148,12 @@ jQuery(document).ready(function () {
       var tableStr = '<table class=\'table\' id=\'ppp-table\'>';
       tableStr += '<tr><th>&nbsp;</th><th align=\'right\'>index</th><th>pronunciaton</th><th>capital letter</th></tr>';
       
+      var mapping   = JSON.parse(returnPronunciationMapping(PluginHelper.getPluginRestUrl('password-pronunciation' + '/mappingtable')));
       // iterate over all characters
       for (i = 0; i < passwordStr.length; i++) {
         var character = passwordStr.charAt(i);
         var charcode = passwordStr.charCodeAt(i);
-        tableStr += getTableRow((i + 1), character, charcode);
+        tableStr += getTableRow(mapping, (i + 1), character, charcode);
       }
       
       // finish table
