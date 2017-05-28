@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<sailpoint>
+
+  <SPRight name="ViewPasswordPronunciationPluginIcon" displayName="View Pronunciation Plugin Icon">
+    <Description>Allows a user to view flagged users in the Todo Plugin</Description>
+  </SPRight>
+
+  <Capability name="PasswordPronunciationPluginAdmin" displayName="Pronunciation Plugin Admin">
+    <Description>The flagged user administrator in the Todo Plugin</Description>
+    <RightRefs>
+      <Reference class="sailpoint.object.SPRight" name="ViewPasswordPronunciationPluginIcon"/>
+    </RightRefs>
+  </Capability>
+
+</sailpoint>

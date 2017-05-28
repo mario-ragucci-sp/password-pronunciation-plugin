@@ -17,7 +17,7 @@
       <entry key="snippets">
         <value>
           <List>
-            <Snippet regexPattern=".*">
+            <Snippet regexPattern=".*" rightRequired="ViewPasswordPronunciationPluginIcon">
               <Scripts>
                 <String>ui/js/buttonInject.js</String>
               </Scripts>
