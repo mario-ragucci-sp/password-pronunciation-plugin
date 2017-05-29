@@ -1,88 +1,23 @@
-// URL where we will find our RESTful logout service    
 function returnPronunciationMapping(url) {
-    var result = {};
-	Ext.Ajax.request({
-        url: url,
-        async: false,
-        success: function(response){
-            result = response.responseText;
-        }
-    });
-	
+	var result = {};
+	$.ajax({
+	  'url': url,
+	  'type': 'GET',
+	  'dataType' : 'json',
+	  'async': false,
+	  beforeSend: function (request) {
+	    request.setRequestHeader('X-XSRF-TOKEN', PluginHelper.getCsrfToken());
+	  },
+	  //The response from the server
+	  'success': function (response) {
+		  result = response;
+	  }
+	});
+
 	return result;
 }
 
 function translateChar(mapping, character, charCode) {
-  /*
-   mapping = {
-    'a': 'alpha',
-    'b': 'bravo',
-    'c': 'charlie',
-    'd': 'delta',
-    'e': 'echo',
-    'f': 'foxtrott',
-    'g': 'golf',
-    'h': 'hotel',
-    'i': 'india',
-    'j': 'juliet',
-    'k': 'kilo',
-    'l': 'lima',
-    'm': 'mike',
-    'n': 'november',
-    'o': 'oskar',
-    'p': 'papa',
-    'q': 'quebec',
-    'r': 'romeo',
-    's': 'sierra',
-    't': 'tango',
-    'u': 'uniform',
-    'v': 'victor',
-    'w': 'whiskey',
-    'x': 'xray',
-    'y': 'yankee',
-    'z': 'zulu',
-    'ä': 'alpha-echo',
-    'ö': 'oskar-echo',
-    'ü': 'union-echo',
-    'ß': 'sierra-sierra',
-    '0': 'Zero',
-    '1': 'One',
-    '2': 'Two',
-    '3': 'Three',
-    '4': 'Four',
-    '5': 'Five',
-    '6': 'Six',
-    '7': 'Seven',
-    '8': 'Eight',
-    '9': 'Nine',
-    '-': '- (Dash)',
-    '.': '. (Point)',
-    ',': ', (Comma)',
-    '!': '! (Exclamation Mark)',
-    '$': '$ (Dollar)',
-    '"': '" (Double Quote)',
-    '§': '§ (Paragraph)',
-    '%': '% (Percent)',
-    '&': '& (Ampersand)',
-    '/': '/ (Slash)',
-    '=': '= (Equals)',
-    '?': '? (Question Mark)',
-    '#': '# (Hash Sign)',
-    ':': ': (Colon)',
-    ';': '; (Semicolon)',
-    '*': '* (Asterisk)',
-    '(': '( (Round Bracket)',
-    ')': ') (Round Bracket)',
-    '[': '[ (Square Bracket)',
-    ']': '] (Square Bracket)',
-    '_': '_ (Underscore)',
-    '\\': '\\ (Backslash) ',
-    '|': '| (Pipe)',
-    '~': '~ (Tilt)',
-    '@': '@ (AT Sign)',
-    '€': '€ (Euro Sign)'
-  };
-  */
   
   var result = '';
   var translation = mapping[character.toLowerCase()];
@@ -148,7 +83,7 @@ jQuery(document).ready(function () {
       var tableStr = '<table class=\'table\' id=\'ppp-table\'>';
       tableStr += '<tr><th>&nbsp;</th><th align=\'right\'>index</th><th>pronunciaton</th><th>capital letter</th></tr>';
       
-      var mapping   = JSON.parse(returnPronunciationMapping(PluginHelper.getPluginRestUrl('password-pronunciation' + '/mappingtable')));
+      var mapping   = returnPronunciationMapping(PluginHelper.getPluginRestUrl('password-pronunciation' + '/mappingtable'));
       // iterate over all characters
       for (i = 0; i < passwordStr.length; i++) {
         var character = passwordStr.charAt(i);
