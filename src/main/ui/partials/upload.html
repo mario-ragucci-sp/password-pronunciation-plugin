@@ -11,8 +11,15 @@
 <div class="alert alert-warning">
 	<span><strong>Attention!</strong> The upload functionality is not implemented, yet. Please come back later.</span>
 </div>
-<!-- <form id="uploadDefinition" role="form" data-ng-submit="upload()">
-<input type="file" id="file" name="file"/>
-<button type="submit" value="upload" class="btn btn-default btn-sm btn-primary"><span class="glyphicon glyphicon-upload"></span>Upload</button>
+
+<div data-ng-show="uploadError" class="alert alert-danger">
+	<span data-ng-show="uploadError" data-ng-cloak>{{"uploadError"}}</span>
+</div>
+<div data-ng-show="uploadSuccess" class="alert alert-success">
+	<span data-ng-show="uploadSuccess" data-ng-cloak>{{uploadSuccess}}</span>
+</div>
+
+<form id="uploadDefinition" role="form" data-ng-submit="upload()">
+	<input type="file" id="uploadFile" name="uploadFile" data-ng-model="uploadFile"/>
+	<button type="submit" value="upload" class="btn btn-default btn-sm btn-primary"><span class="glyphicon glyphicon-upload"></span>Upload</button>
 </form>
- -->

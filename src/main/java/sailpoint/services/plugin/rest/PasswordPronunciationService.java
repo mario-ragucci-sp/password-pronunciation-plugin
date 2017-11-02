@@ -1,6 +1,9 @@
 package sailpoint.services.plugin.rest;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,6 +27,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
+
+import com.sun.jersey.multipart.FormDataParam;
 
 import sailpoint.rest.plugin.AllowAll;
 import sailpoint.rest.plugin.BasePluginResource;
@@ -62,7 +67,6 @@ public class PasswordPronunciationService extends BasePluginResource {
 		} catch (GeneralException e) {
 			_logger.error(e.getMessage());
 		}
-		
 		
 		if(_logger.isDebugEnabled()) {
 			_logger.debug(String.format("LEAVING method %s (returns: %s)", "getData", result));
@@ -205,17 +209,49 @@ public class PasswordPronunciationService extends BasePluginResource {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("uploadData")
-	public String uploadData(@FormParam("file") File file) {
+	public Response uploadData(@FormDataParam("file") InputStream uploadedInputStream) {
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("ENTERING method %s()", "uploadData"));
+			_logger.debug(String.format("ENTERING method %s(file = %s)", "uploadData", uploadedInputStream));
 		}
-		String result = null;
+		Response response = null;
+		Map<String, Object> result = new HashMap<>();
+		BufferedReader br = new BufferedReader(new InputStreamReader(uploadedInputStream));
+		String line = null;
+		try {
+			while((line = br.readLine()) != null) {
+				String[] parts = line.split(";");
+				result.put(parts[0], parts[1]);
+			}
+		} catch (IOException e) {
+			_logger.error(e.getMessage());
+		} finally {
+			if(br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					_logger.error(e.getMessage());
+				}
+			}
+			if(uploadedInputStream != null) {
+				try {
+					uploadedInputStream.close();
+				} catch (IOException e) {
+					_logger.error(e.getMessage());
+				}
+			}
+		}
+		
+		if(result != null) {
+			response = Response.ok().entity(result).build();
+		} else {
+			response = Response.status(Status.NOT_ACCEPTABLE).build();
+		}
 		
 		
 		if(_logger.isDebugEnabled()) {
-			_logger.debug(String.format("LEAVING method %s (returns: %s)", "uploadData", result));
+			_logger.debug(String.format("LEAVING method %s (returns: %s)", "uploadData", response));
 		}
-		return result;	
+		return response;	
 	}
 		
 	/**

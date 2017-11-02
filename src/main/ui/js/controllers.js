@@ -15,8 +15,6 @@
 		$scope.subtitle2 = 'Modify existing Pronunciation Data';
 
 		$scope.addRow = function(newPronunciationKey, newPronunciationValue){
-			alert($scope.newPronunciationKey);
-			alert($scope.newPronunciationValue);
 			$http({
 		        method : "POST",
 		        url : PluginHelper.getPluginRestUrl('password-pronunciation') + '/data',
@@ -97,19 +95,32 @@
 	});
 
 	/** UPLOAD Controller **/
-	app.controller('UploadController', function($scope) {
+	app.controller('UploadController', function($scope, $http) {
 		$scope.headline = 'Upload new Pronunciation Data';
 
 		$scope.upload = function() {
-			var f = document.getElementById('file').files[0],
-					r = new FileReader();
-
-			r.onloadend = function(e) {
-				var data = e.target.result;
-				//send your binary data via $http or $resource or do anything else with it
-			}
-
-			r.readAsBinaryString(f);
+			alert("uploadFile " + uploadFile.files[0]);
+			var fd = new FormData();
+		    //Take the first selected file
+		    fd.append("file", uploadFile.files[0]);
+		    alert("alert");
+		    
+		    $http({
+		        method : "POST",
+		        url : PluginHelper.getPluginRestUrl('password-pronunciation') + '/uploadData',
+		        data: fd,
+		        headers: { 'Content-Type': undefined},
+		        transformRequest: angular.identity
+		    }).then(function mySuccess(response) {
+				$scope.uploadError = null;
+				$scope.uploadSuccess = 'Data was sucessfully updated';
+		        return;
+		    }, function myError(response) {
+		    	$scope.uploadError = 'There was an error uploading the file';
+				$scope.uploadSuccess = null;			
+				return;
+		    });
+		    
 		};
 	});
 }());
